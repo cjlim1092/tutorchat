@@ -71,9 +71,9 @@ function saveMessage(messageText) {
 function botMessage(messageText) {
   // Add a new message entry to the Firebase database.
   return firebase.firestore().collection('messages').add({
-    name: getUserName(),
+    name: "Tutor",
     text: messageText,
-    profilePicUrl: getProfilePicUrl(),
+    profilePicUrl: "https://twemoji.maxcdn.com/2/svg/1f916.svg",
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(function(error) {
     console.error('Error writing new message to Firebase Database', error);
@@ -195,6 +195,11 @@ function onMessageFormSubmit(e) {
         botMessage("Are you the tutor or are you being tutored?");
     }
   }
+}
+
+//Gives the student a hint message
+function getHint(){
+  botMessage("Are you the tutor or are you being tutored?");
 }
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
@@ -391,11 +396,15 @@ var userNameElement = document.getElementById('user-name');
 var signInButtonElement = document.getElementById('sign-in');
 var signOutButtonElement = document.getElementById('sign-out');
 var signInSnackbarElement = document.getElementById('must-signin-snackbar');
+var hintButtonElement =  document.getElementById('hint');
 
 // Saves message on form submit.
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
 signOutButtonElement.addEventListener('click', signOut);
 signInButtonElement.addEventListener('click', signIn);
+
+// Listens for hint button
+hintButtonElement.addEventListener('click', getHint)
 
 // Toggle for the button.
 messageInputElement.addEventListener('keyup', toggleButton);
