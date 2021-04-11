@@ -44,6 +44,11 @@ function getUserName() {
   return firebase.auth().currentUser.displayName;
 }
 
+//returnshelp function 
+/*function getHelp(){
+
+}*/
+
 // Returns true if a user is signed-in.
 function isUserSignedIn() {
   return !!firebase.auth().currentUser;
@@ -57,11 +62,23 @@ function saveMessage(messageText) {
     text: messageText,
     profilePicUrl: getProfilePicUrl(),
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    module: 11
   }).catch(function(error) {
     console.error('Error writing new message to Firebase Database', error);
   });
 }
+
+//helpbot
+function botMessage(messageText) {
+  // Add a new message entry to the Firebase database.
+  return firebase.firestore().collection('messages').add({
+    name: getUserName(),
+    text: messageText,
+    profilePicUrl: getProfilePicUrl(),
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(error) {
+    console.error('Error writing new message to Firebase Database', error);
+  });
+} 
 
 // Loads chat messages history and listens for upcoming ones.
 function loadMessages() {
@@ -75,9 +92,9 @@ function loadMessages() {
         deleteMessage(change.doc.id);
       } else {
         var message = change.doc.data();
-        console.log('displayMessage')
+        // console.log(message)
         displayMessage(change.doc.id, message.timestamp, message.name,
-                      message.text, message.profilePicUrl, message.imageUrl, message.module !=11);
+                      message.text, message.profilePicUrl, message.imageUrl);
       }
     });
   });
@@ -166,11 +183,17 @@ function onMessageFormSubmit(e) {
   e.preventDefault();
   // Check that the user entered a message and is signed in.
   if (messageInputElement.value && checkSignedInWithMessage()) {
+    // if it says help then ask if they are the tutor or tuttee 
     saveMessage(messageInputElement.value).then(function() {
       // Clear message text field and re-enable the SEND button.
       resetMaterialTextfield(messageInputElement);
       toggleButton();
     });
+
+    if (messageInputElement.value.includes("help")){
+      //call help function 
+        botMessage("Are you the tutor or are you being tutored?");
+    }
   }
 }
 
@@ -180,6 +203,9 @@ function authStateObserver(user) {
     // Get the signed-in user's profile pic and name.
     var profilePicUrl = getProfilePicUrl();
     var userName = getUserName();
+
+    //get help
+    //var getHelp = getHelp();
 
     // Set the user's profile pic and name.
     userPicElement.style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
@@ -298,7 +324,6 @@ function createAndInsertMessage(id, timestamp) {
 
 // Displays a Message in the UI.
 function displayMessage(id, timestamp, name, text, picUrl, imageUrl, hidden) {
-
   if (hidden) {
     return 
   }
