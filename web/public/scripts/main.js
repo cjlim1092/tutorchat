@@ -83,7 +83,7 @@ function botMessage(messageText) {
 // Loads chat messages history and listens for upcoming ones.
 function loadMessages() {
   // Create the query to load the last 12 messages and listen for new ones.
-  var query = firebase.firestore().collection('messages').orderBy('timestamp', 'desc').limit(12);
+  var query = firebase.firestore().collection('messages').orderBy('timestamp', 'desc').limit(25);
   
   // Start listening to the query.
   query.onSnapshot(function(snapshot) {
@@ -177,6 +177,10 @@ function onMediaFileSelected(event) {
     saveImageMessage(file);
   }
 }
+//global variable for tutee or tutor
+var role = 0;
+//global variable for content hints
+var contentHint = 0;
 
 // Triggered when the send new message form is submitted.
 function onMessageFormSubmit(e) {
@@ -189,18 +193,111 @@ function onMessageFormSubmit(e) {
       resetMaterialTextfield(messageInputElement);
       toggleButton();
     });
+    //hello/hi function
+    if (messageInputElement.value.includes("hello")){
+      botMessage('Welcome to the simple and compound interest peer learning tool. If you are the tutor please type "I am the tutor" if you are the tutee please type "I am the tutee"');
+    }
+    if (messageInputElement.value.includes("hi")){
+      botMessage('Welcome to the simple and compound interest peer learning tool. If you are the tutor please type "I am the tutor" if you are the tutee please type "I am the tutee"');
+    }
 
-    if (messageInputElement.value.includes("help")){
+    //help function 
+    if (messageInputElement.value.toLowerCase().includes("help")){
       //call help function 
         botMessage("Are you the tutor or are you being tutored?");
+    }
+
+    //tutor directions tree
+    if (messageInputElement.value.toLowerCase().includes("i am the tutor")){
+        botMessage("The first thing you should do is ask your peer to upload and explain their mind map to you. Remember to let them explain their thinking to you before you try to explain concepts to them."); 
+        botMessage("When you are ready for the next phase type 'phase 2'")
+        //tutor uses phases
+        //set global variable to tutor 
+        role = 1;
+        counter = -1;
+        console.log(role+'tutor')
+    }
+    //tutor phase 2
+    if (messageInputElement.value.toLowerCase().includes("phase 2")){
+        botMessage("Now it is your turn to help your peer understand the concept more thoroughly. Either ask your peer questions based on what they told you in the previous phase, or click the hint button for ideas.");
+        botMessage("When you are ready for the next phase type 'phase 3'");
+      }
+
+    //tutor phase 3
+    if (messageInputElement.value.toLowerCase().includes("phase 3")){
+        botMessage("Now your peer is going to update thier mind map. You might remind your peer to add new connections between topics that are already on their map. Or create new topics that you discussed together.");
+        botMessage("When you are ready for the next phase type 'tutoring complete'");
+      }  
+
+    //tutee directions tree
+    if (messageInputElement.value.toLowerCase().includes("i am the tutee")){
+      botMessage("You should have completed the OLI module and drawn a mind map before today's peer learning. Please upload your mind map using the yellow image button.");
+      botMessage("When you are ready for the next direction type 'part 2'");
+      //tutee uses parts 
+      //set global variable to tutee
+      role = 2;
+      counter = -1;
+      console.log(role+'tutee')
+    }
+    //tutee part 2
+    if (messageInputElement.value.toLowerCase().includes("part 2")){
+      botMessage("Now your tutor will help you understand the concepts better. Do your best to answer each question, but it is okay not to know the answer yet. Just ask your tutor to explain it to you.");
+      botMessage("When you are ready for the next phase type 'part 3'");
+    }
+
+    //tutee part 3
+    if (messageInputElement.value.toLowerCase().includes("part 3")){
+      botMessage("Now you will update your mind map. You do not need to send it to your tutor again, but you can if you want feedback.");
+      botMessage("When you are ready for the next phase type 'tutoring complete'");
+    }  
+    
+    // tutoring complete
+    if (messageInputElement.value.toLowerCase().includes("tutoring complete")){
+      botMessage("Great job today! It might be nice to thank your peer for thier time. Today's session was a great review for the quiz. We will take the quiz in class next time we meet, good luck!");
+    }
+
+    //content hints
+    if (messageInputElement.value.toLowerCase().includes("content hints")){
+      botMessage("Hello tutor, The hint button will give content hints from now on, type 'I am the tutor' to return to tutoring help");
+      //set global variable to tutee
+      contentHint = 1;
+      counter = -1;
+      console.log(contentHint)
+    }
+
+    //reset function for debugging
+    if (messageInputElement.value.toLowerCase().includes("reset")){
+      //reset global variable
+      role = 0;
+      contentHint = 0;
+      console.log(role)
+      console.log(contentHint)
     }
   }
 }
 
-//Gives the student a hint message
-function getHint(){
-  botMessage("Are you the tutor or are you being tutored?");
-}
+var counter = -1;
+function getHint(e){
+  e.preventDefault();
+  let tutorlist = ['Try using the sentence frame "Can you explain..."', 'Try using the sentence frame "Many students think.. but really..."','If you need content hints please type "content hints"']
+  let tuteelist = ['Try to explain the connections you made in the mind map', 'If you are confused try saying "I am confused about..." ']
+  let contentlist = ['duck','quack'] // need to add content hints
+  console.log (role)
+  // if else statement for global variable if undfined ask question if tutor list 1 in tutee list 2 (incrament counter inside tutee/tutor thing)
+  if (contentHint ==1) {
+    ++counter;
+    botMessage (contentlist[counter%(contentlist.length)])
+  } else if (role == 1){
+    ++counter;
+    botMessage (tutorlist[counter%(tutorlist.length)])
+  } else if (role == 2){
+    ++counter;
+    botMessage (tuteelist[counter%(tuteelist.length)])
+  } else if (role == 0){
+    botMessage ('If you are the tutor please type "I am the tutor" if you are the tutee please type "I am the tutee"')
+  }  
+  //need to debug content hints
+} 
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
 function authStateObserver(user) {
@@ -261,7 +358,7 @@ function resetMaterialTextfield(element) {
 
 // Template for messages.
 var MESSAGE_TEMPLATE =
-    '<div class="message-container">' +
+    '<div class="message-container">' +  
       '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="message"></div>' +
       '<div class="name"></div>' +
