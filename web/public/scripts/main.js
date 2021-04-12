@@ -1,4 +1,6 @@
 /**
+ * This peer tutor client can handle a tutor, tutee, and there is an agent to help them chat
+ * View the deployed version here https://friendlychat-87b67.web.app
  * Copyright 2015 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
