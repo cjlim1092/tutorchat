@@ -199,14 +199,8 @@ function onMessageFormSubmit(e) {
     if (messageInputElement.value.includes("hello")){
       botMessage('Welcome to the simple and compound interest peer learning tool. If you are the tutor please type "I am the tutor" if you are the tutee please type "I am the tutee"');
     }
-    if (messageInputElement.value.includes("hi")){
+    if (messageInputElement.value == "hi"){
       botMessage('Welcome to the simple and compound interest peer learning tool. If you are the tutor please type "I am the tutor" if you are the tutee please type "I am the tutee"');
-    }
-
-    //help function 
-    if (messageInputElement.value.toLowerCase().includes("help")){
-      //call help function 
-        botMessage("Are you the tutor or are you being tutored?");
     }
 
     //tutor directions tree
@@ -283,7 +277,8 @@ function getHint(e){
   e.preventDefault();
   let tutorlist = ['Try using the sentence frame "Can you explain..."', 'Try using the sentence frame "Many students think.. but really..."','If you need content hints please type "content hints"']
   let tuteelist = ['Try to explain the connections you made in the mind map', 'If you are confused try saying "I am confused about..." ']
-  let contentlist = ['duck','quack'] // need to add content hints
+  let contentlist = ['Try comparing interest formulas using this tool https://teachbanzai.com/wellness/resources/simple-vs-compound-interest-calculator','Does your partner understand why simple interest is a linear equatin (p.3)','Does your peer understand why compound interest is an exponential function? (p.3)',
+  'Does your peer understand what happens with compound interest over a long period of time?','Does your peer understand why the principal remains the same in simple interest, but changes in compound interest? (p.6)', 'Does your partner understand how to use the simple (p.7) and compound interest (p.9) formulas'] // need to add content hints
   console.log (role)
   // if else statement for global variable if undfined ask question if tutor list 1 in tutee list 2 (incrament counter inside tutee/tutor thing)
   if (contentHint ==1) {
